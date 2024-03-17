@@ -8,10 +8,9 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // Lee el archivo y convierte los datos a un objeto
-  const formData = await request.formData();
 
   // Obtiene el archivo del FormData
-  const file = formData.get("file");
+  const file = request.body;
 
   const workbook = XLSX.read(file, { type: 'buffer' });
   const sheetName = workbook.SheetNames[0];

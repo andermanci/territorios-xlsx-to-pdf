@@ -1,69 +1,42 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+import { FileUploader } from '@/components/FileUploader.jsx'
 ---
 
 <Layout title="xlsx -> pdf">
 	<main class="flex flex-col gap-y-8 justify-center items-center h-full">
 		<h1 class="text-5xl">IMPORTA TU REGISTRO A PDF</h1>
-		<div class="panel panel-primary">
-            <div class="panel-heading">Converso de EXCEL a JSON</div>
-            <div class="panel-body">
-                <!-- Input type file to upload excel file -->
-                <input type="file" id="fileUpload" accept=".xls,.xlsx" /><br />
-                <button type="button" id="uploadExcel">Convert</button>
-
-                <!-- Render parsed JSON data here -->
-                <div style="margin-top:10px;">
-                    <pre id="jsonData"></pre>
-                </div>
-            </div>
-        </div>
+		<FileUploader/>
 	</main>
 </Layout>
 
 <script>
 	let selectedFile: any;
 
-	document.getElementById("fileUpload")?.addEventListener("change", async function(event) {
-		const selectedFile = event.target?.files[0];
-		const formData = new FormData();
-		formData.append('file', selectedFile);
+	// document.getElementById("fileUpload")?.addEventListener("change", async function(event) {
+	// 	const selectedFile = event.target?.files[0];
 
-		fetch("/api/read-file", {
-			method: 'POST',
-			body: formData
-		})
-		.then(response => response.json())
-		.then(data => {
-			// Aquí puedes manejar la respuesta de la API
-			console.log('Respuesta de la API:', data);
-		})
-		.catch(error => console.error('Error:', error));
-	});
+	// 	const reader = new FileReader();
+
+	// 	reader.onload = (e) => {
+	// 		const data = new Uint8Array(e.target.result);
+	// 		console.log({data});
+
+	// 		fetch("/api/read-file", {
+	// 			method: 'POST',
+	// 			body: data
+	// 		})
+	// 		.then(response => response.json())
+	// 		.then(data => {
+	// 			// Aquí puedes manejar la respuesta de la API
+	// 			console.log('Respuesta de la API:', data);
+	// 		})
+	// 		.catch(error => console.error('Error:', error));
+
+	// 	};
+
+		
+	// });
 	
-	document.getElementById("uploadExcel")?.addEventListener("click", async function() {
-		if (selectedFile) {
-			
-		  var fileReader = new FileReader();
-		  fileReader.onload = async function(event) {
-			
-
-
-			// var data = event.target?.result;
-
-			// var workbook = XLSX.read(data, {
-			//   type: "binary"
-			// });
-			// workbook.SheetNames.forEach(sheet => {
-			//   let rowObject = XLSX.utils.sheet_to_row_object_array(
-			// 	workbook.Sheets[sheet]
-			//   );
-			//   let jsonObject = JSON.stringify(rowObject);
-			//   document.getElementById("jsonData").innerHTML = jsonObject;
-			//   console.log(jsonObject);
-			// });
-		  };
-		  fileReader.readAsBinaryString(selectedFile);
-		}
-	});
   </script>
