@@ -23,5 +23,8 @@
     "typescript": "^5.4.2",
     "xlsx": "^0.18.5",
     "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.28"
   }
 }
