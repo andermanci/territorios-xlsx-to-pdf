@@ -32,9 +32,6 @@ export function PDFGenerator({ basePdf }) {
     const handleClick = async () => {
 
         Object.entries(jsonData).forEach(async function(data) {
-
-            const basePdfDoc = await PDFDocument.load(basePdf);
-
             const pdfDoc = await PDFDocument.load(basePdf);
             fontObj = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
@@ -43,12 +40,9 @@ export function PDFGenerator({ basePdf }) {
 
             if (sheetName == 'Calculos') return;
 
-            territories.forEach(async function(territory, index) {
-                if (index % TERRITORIES_PER_PAGE == 0 && index >= TERRITORIES_PER_PAGE) {
-                    const [basePage] = await pdfDoc.copyPages(basePdfDoc, [0]);
-                    pdfDoc.addPage(basePage);
-                }
+            await addPages(territories, pdfDoc);
 
+            territories.forEach(async function(territory, index) {
                 if (index % TERRITORIES_PER_PAGE == 0) {
                     currentPage = pdfDoc.getPage(Math.floor(index / TERRITORIES_PER_PAGE));
                     currentX = X_START;
@@ -64,6 +58,16 @@ export function PDFGenerator({ basePdf }) {
 
             downloadPdf(pdfDoc, sheetName);
         });
+    }
+
+    const addPages = async (territories, pdfDoc) => {
+        const pagesTotal = Math.ceil(territories.length / TERRITORIES_PER_PAGE);
+        const basePdfDoc = await PDFDocument.load(basePdf);
+
+        for (let i = 0; i < pagesTotal - 1; i++) {
+            const [basePage] = await pdfDoc.copyPages(basePdfDoc, [0]);
+            pdfDoc.addPage(basePage);
+        }
     }
 
     const paintYear = () => {
