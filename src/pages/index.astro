@@ -11,7 +11,7 @@ const basePdf = fs.readFileSync(pdfPath);
 
 <Layout title="xlsx -> pdf">
 	<main class="flex flex-col gap-y-8 justify-center items-center h-full">
-		<h1 class="text-5xl">IMPORTA TU REGISTRO A PDF</h1>
+		<h1 class="text-5xl text-center">EXPORTA TU REGISTRO A PDF</h1>
 		<FileUploader client:load/>
 		<PDFGenerator basePdf={basePdf} client:load/>
 	</main>
