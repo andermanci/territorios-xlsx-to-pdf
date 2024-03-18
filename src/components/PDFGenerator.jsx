@@ -253,6 +253,7 @@ export function PDFGenerator({ basePdf }) {
                             weekStart={1}
                             labelTodayButton="Hoy"
                             labelClearButton="Limpar"
+                            className="w-[250px]"
                         />
                     </div>
                     <Button onClick={handleClick}>Generar PDF</Button>
