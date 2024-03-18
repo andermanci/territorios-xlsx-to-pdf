@@ -200,20 +200,20 @@ export function PDFGenerator({ basePdf }) {
     return (
         <section className="flex flex-col w-full">
             {jsonData && (
-                <div class="flex flex-col items-center gap-12">
-                    <div class="flex gap-8 justify-center">
+                <div className="flex flex-col items-center gap-12">
+                    <div className="flex gap-8 justify-center">
                         {
                             Object.keys(jsonData).map((key) => (
-                                <article class="flex gap-4 items-center p-4 rounded-md shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
-                                    <img src="/images/Google_Sheets_Logo.png" class="h-[40px]"/>
+                                <article key={key} className="flex gap-4 items-center p-4 rounded-md shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
+                                    <img src="/images/Google_Sheets_Logo.png" className="h-[40px]"/>
                                     <span>{key}</span>
                                 </article>
                             ))
                         }
                     </div>
-                    <div class="flex flex-col items-center gap-2">
-                        <h5 class="text-2xl font-bold">Selecciona una fecha</h5>
-                        <p class="font-thin mb-4">Los datos exportados serán a partir de la fecha seleccionada</p>
+                    <div className="flex flex-col items-center gap-2">
+                        <h5 className="text-2xl font-bold text-center">Selecciona una fecha</h5>
+                        <p className="font-thin mb-4 text-center">Los datos exportados serán a partir de la fecha seleccionada</p>
                         <Datepicker
                             language="es-ES"
                             onSelectedDateChanged={setSelectedDate}
