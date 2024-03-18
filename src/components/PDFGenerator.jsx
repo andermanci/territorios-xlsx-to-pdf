@@ -127,6 +127,7 @@ export function PDFGenerator({ basePdf }) {
     const isAssignmentInDateRange = (assignment) => {
         const firstDate = new Date(getFormattedDate(assignment.firstDate));
         const secondDate = new Date(getFormattedDate(assignment.secondDate));
+
         return selectedDate < firstDate || selectedDate < secondDate;
     }
 
@@ -215,8 +216,8 @@ export function PDFGenerator({ basePdf }) {
                         <p class="font-thin mb-4">Los datos exportados serán a partir de la fecha seleccionada</p>
                         <Datepicker
                             language="es-ES"
-                            selected={selectedDate}
-                            onSelect={setSelectedDate}
+                            onSelectedDateChanged={setSelectedDate}
+                            weekStart={1}
                             labelTodayButton="Hoy"
                             labelClearButton="Limpar"
                         />
