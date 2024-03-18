@@ -202,7 +202,7 @@ export function PDFGenerator({ basePdf }) {
                 <div class="flex flex-col items-center gap-12">
                     <div class="flex gap-8 justify-center">
                         {
-                            Object.keys(jsonData).map((key, index) => (
+                            Object.keys(jsonData).map((key) => (
                                 <article class="flex gap-4 items-center p-4 rounded-md shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
                                     <img src="/images/Google_Sheets_Logo.png" class="h-[40px]"/>
                                     <span>{key}</span>
