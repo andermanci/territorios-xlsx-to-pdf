@@ -27,11 +27,14 @@ export function PDFGenerator({ basePdf }) {
 
     const [selectedDate, setSelectedDate] = useState(null);
 
-    const TERRITORIOES_PER_PAGE = 20;
+    const TERRITORIES_PER_PAGE = 20;
 
     const handleClick = async () => {
 
         Object.entries(jsonData).forEach(async function(data) {
+
+            const basePdfDoc = await PDFDocument.load(basePdf);
+
             const pdfDoc = await PDFDocument.load(basePdf);
             fontObj = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
@@ -40,10 +43,14 @@ export function PDFGenerator({ basePdf }) {
 
             if (sheetName == 'Calculos') return;
 
-            territories.forEach(function(territory, index) {
-                if (index % TERRITORIOES_PER_PAGE == 0) {
-                    pdfDoc.addPage();
-                    currentPage = pdfDoc.getPage(Math.floor(index / TERRITORIOES_PER_PAGE));
+            territories.forEach(async function(territory, index) {
+                if (index % TERRITORIES_PER_PAGE == 0 && index >= TERRITORIES_PER_PAGE) {
+                    const [basePage] = await pdfDoc.copyPages(basePdfDoc, [0]);
+                    pdfDoc.addPage(basePage);
+                }
+
+                if (index % TERRITORIES_PER_PAGE == 0) {
+                    currentPage = pdfDoc.getPage(Math.floor(index / TERRITORIES_PER_PAGE));
                     currentX = X_START;
                     currentY = Y_START;
                     paintYear();
@@ -162,6 +169,28 @@ export function PDFGenerator({ basePdf }) {
                 color: rgb(0, 0, 0)
             });
         }
+    }
+
+    const addBasePdf = async (pdfDoc) => {
+        const basePdfDoc = await PDFDocument.load(basePdf);
+
+        const pageCount = pdfDoc.getPageCount();
+        for (let i = 0; i < pageCount; i++) {
+            const [page] = await basePdfDoc.copyPages(pdfDoc, [0]);
+            pdfDoc(page);
+        }
+    }
+
+    const createDocWithBasePdf = async (pdfDoc) => {
+        const basePdfDoc = await PDFDocument.load(basePdf);
+
+        const pageCount = pdfDoc.getPageCount();
+        for (let i = 0; i < pageCount; i++) {
+            const [page] = await pdfDocWithBase.copyPages(pdfDoc, [i]);
+            pdfDocWithBase.embedPage(page);
+        }
+
+        return pdfDocWithBase;
     }
 
     const downloadPdf = async (pdfDoc, sheetName) => {
