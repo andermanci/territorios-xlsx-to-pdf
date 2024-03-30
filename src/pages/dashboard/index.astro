@@ -1,0 +1,17 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+import SignIn from '@/components/SignIn.astro'
+import Dashboard from '@/sections/Dashboard.astro'
+
+import { getSession } from 'auth-astro/server';
+
+const session = await getSession(Astro.request)
+---
+
+<Layout title="xlsx -> pdf">
+	<main class="flex flex-col gap-y-8 justify-center items-center h-full">
+        {session === null ? <SignIn /> : <Dashboard user={session.user} />}
+	</main>
+</Layout>
+

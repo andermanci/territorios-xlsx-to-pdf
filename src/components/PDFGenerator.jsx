@@ -231,8 +231,9 @@ export function PDFGenerator({ basePdf }) {
     }
 
     return (
-        <section className="flex flex-col w-full">
-            {jsonData && (
+        <>
+        {jsonData && (
+            <section className="flex flex-col w-full">
                 <div className="flex flex-col items-center gap-12">
                     <div className="flex gap-8 justify-center">
                         {
@@ -258,7 +259,8 @@ export function PDFGenerator({ basePdf }) {
                     </div>
                     <Button onClick={handleClick}>Generar PDF</Button>
                 </div>
-            )}
-        </section>
+            </section>
+        )}
+        </>
     )
 } 

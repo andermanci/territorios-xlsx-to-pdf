@@ -1,0 +1,16 @@
+---
+import type { User } from "@auth/core/types"
+
+import SignOut from '@/components/SignOut.astro'
+
+interface Props {
+	user: User
+}
+
+const { user } = Astro.props as Props
+---
+
+<section class="flex flex-col items-center gap-8">
+    <p>Bienvenido {user?.name}</p>
+    <SignOut/>
+</section>

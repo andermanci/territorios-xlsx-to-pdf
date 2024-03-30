@@ -1,0 +1,18 @@
+<button id="login" class="bg-transparent hover:bg-gray-500 text-gray-700 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded">Iniciar sesión</a>
+
+<script>
+    import { $ } from "@/lib/dom-selector"
+
+    const { signIn } = await import("auth-astro/client")
+    const $login = $("#login")
+
+    if ($login) {
+        $login.onclick = () => {
+            signIn("google")
+            $login.setAttribute("aria-disabled", "true")
+
+            const $span = $login.querySelector("span")
+            if ($span) $span.innerText = "Iniciando sesión..."
+        }
+    }
+</script>
