@@ -9,5 +9,22 @@ export default {
 	},
 	plugins: [
 		require('flowbite/plugin'),
+		require("daisyui")
 	],
+	daisyui: {
+		themes: [
+			{
+				light: {
+					...require("daisyui/src/theming/themes")["light"],
+					primary: "#496DA8",
+				},
+			},
+			{
+				dark: {
+					...require("daisyui/src/theming/themes")["dark"],
+					primary: "#496DA8",
+				},
+			},
+		],
+	},
 }

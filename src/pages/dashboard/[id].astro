@@ -5,11 +5,38 @@ import { getSession } from 'auth-astro/server';
 import { db, eq, Sheet } from 'astro:db';
 import Typography from "@/components/Typography.astro";
 
+import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { JWT } from 'google-auth-library'
+
 const session = await getSession(Astro.request)
 const user = session?.user;
 const userId = user?.email;
 
 const sheets: any[] = await db.select().from(Sheet).where(eq(Sheet.userId, userId ?? ''));
+
+const { id } = Astro.params
+
+// const activeSheet = sheets.find(sheet => sheet.sheetId == id);
+
+const SCOPES = [
+  'https://www.googleapis.com/auth/spreadsheets'
+];
+
+try {
+    const jwtFromEnv = new JWT({
+        email: import.meta.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        key: import.meta.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+        scopes: SCOPES,
+    });
+
+    console.log({jwtFromEnv});
+
+    const doc = new GoogleSpreadsheet(id!, jwtFromEnv);
+    await doc.loadInfo();
+    console.log({doc});
+} catch (error) {
+    console.error('Error al autenticar con Google Sheets:', error);
+}
 ---
 
 <Dashboard title="Dashboard">
@@ -22,7 +49,13 @@ const sheets: any[] = await db.select().from(Sheet).where(eq(Sheet.userId, userI
                 const url = '/dashboard/' + sheet.sheetId;
                 return (
                     <a href={url}>
-                        <article class="p-4 rounded shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] flex items-center gap-6 cursor-pointer">
+                        <article
+                            class:list={[
+                                "p-4 rounded flex items-center gap-6 cursor-pointer",
+                                id == sheet.sheetId && "border border-primary",
+                                id != sheet.sheetId && "shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                            ]}
+                        >
                             <img src="/images/Google_Sheets_Logo.png" class="h-[30px]"/>
                             <Typography as="span" variant="body-bold" color="black" class:list={""}>
                                 { sheet.name }

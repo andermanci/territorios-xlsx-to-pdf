@@ -1,0 +1,37 @@
+---
+import Logout from "@/icons/Logout.astro";
+
+import { getSession } from 'auth-astro/server';
+
+const session = await getSession(Astro.request)
+const user = session?.user;
+---
+
+<div class="dropdown dropdown-end">
+    <div tabindex="0" role="button" class="avatar placeholder">
+        <div class="bg-neutral text-neutral-content rounded-full w-10">
+          <span class="text-xl">T</span>
+        </div>
+      </div> 
+    <div class="dropdown-content z-[1] shadow bg-base-100 rounded-box w-52 divide-y">
+        <div class="pt-4 pb-3 px-3">
+            <span>{user?.name}</span>
+            <span class="font-medium truncate">{user?.email}</span>
+        </div>
+        <div class="pb-4 pt-3 px-3">
+            <button id="logout" class="flex gap-4 items-center font-medium">
+                Cerrar sesion
+                <Logout />
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    import { $ } from "@/lib/dom-selector"
+
+    const { signOut } = await import("auth-astro/client")
+    const $logout = $("#logout")
+
+    if ($logout) $logout.onclick = () => signOut()
+</script>

@@ -1,0 +1,21 @@
+---
+import HomeIcon from "@/icons/Home.astro"
+import SheetIcon from "@/icons/Sheets.astro"
+
+import SideMenuItem from "./SideMenuItem.astro"
+const { sideBarActiveItemID } = Astro.props;
+---
+
+<nav class="flex flex-col flex-1 gap-2">
+    <ul class="menu">
+        <SideMenuItem href="/dashboard" sideBarActiveItemID={sideBarActiveItemID}>
+            <HomeIcon class="w-[24px]"/>
+            Inicio
+        </SideMenuItem>
+
+        <SideMenuItem href="/dashboard/sheets" id="sheets" sideBarActiveItemID={sideBarActiveItemID}>
+            <SheetIcon class="w-[24px]"/>
+            Gestionar mis plantillas
+        </SideMenuItem>
+    </ul>
+</nav>
