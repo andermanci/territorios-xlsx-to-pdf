@@ -3,16 +3,25 @@ import Dashboard from "@/layouts/Dashboard.astro";
 
 import { getSession } from 'auth-astro/server';
 import { db, eq, Sheet } from 'astro:db';
-import Typography from "@/components/Typography.astro";
 
-import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library'
+import SheetSelector from "@/components/SheetSelector.astro";
+import Stats from "@/sections/Stats.astro";
+
+const START_ROW = 11
+
+const NUM_COL = 2
+const LASTDATE_COL = 3
+const FIRSTASSIGNED_COL = 4
 
 const session = await getSession(Astro.request)
-const user = session?.user;
-const userId = user?.email;
+const user = session?.user
+const userId = user?.email
 
-const sheets: any[] = await db.select().from(Sheet).where(eq(Sheet.userId, userId ?? ''));
+const sheets: any[] = await db.select().from(Sheet).where(eq(Sheet.userId, userId ?? ''))
+let doc = null
+let spreadSheetData = null
 
 const { id } = Astro.params
 
@@ -22,49 +31,90 @@ const SCOPES = [
   'https://www.googleapis.com/auth/spreadsheets'
 ];
 
+const getAssignedData = (worksheet: GoogleSpreadsheetWorksheet, currentCol: number, currentRow: number) => {
+    const name = worksheet.getCell(currentRow, currentCol).value;
+    const firstDate = worksheet.getCell(currentRow + 1, currentCol).value;
+    const secondDate = worksheet.getCell(currentRow + 1, currentCol + 1).value;
+    return { name, firstDate, secondDate };
+}
+
+const getRowData = (worksheet: GoogleSpreadsheetWorksheet, currentRow: number) => {
+    const num = worksheet.getCell(currentRow, NUM_COL);
+    console.log({num: num});
+    const lastDate = worksheet.getCell(currentRow, LASTDATE_COL).value;
+
+    const registry = [];
+    let currentCol = FIRSTASSIGNED_COL;
+
+    while (currentCol < worksheet.columnCount - 1) {
+        const colValid = worksheet.getCell(currentRow, currentCol);
+        if (colValid) {
+            const assignedData = getAssignedData(worksheet, currentCol, currentRow);
+            registry.push(assignedData);
+        }
+        currentCol += 2;
+    }
+
+    return { num, lastDate, registry };
+}
+
+const getSheetData = (worksheet: GoogleSpreadsheetWorksheet) => {
+    let currentRow = START_ROW;
+
+    const response = [];
+
+    while (currentRow < worksheet.rowCount - 1) {
+        const rowValid = worksheet.getCell(currentRow, NUM_COL);
+        if (rowValid) {
+            const rowData = getRowData(worksheet, currentRow);
+            response.push(rowData);
+        }
+        currentRow += 2;
+    }
+
+    return response;
+}
+
+const getSheets = async (doc: GoogleSpreadsheet) => {
+    const totalSheets = doc.sheetCount;
+    const sheetData: any = {};
+
+    for (let i=0; i < totalSheets; i++) {
+        const sheet = doc.sheetsByIndex[i];
+
+        if (sheet.title != 'Calculos') {
+            await sheet.loadCells({
+                startRowIndex: 0,
+                startColumnIndex: 0,
+                endRowIndex: sheet.rowCount,
+                endColumnIndex: sheet.columnCount
+            });
+            sheetData[sheet.title] = getSheetData(sheet);
+        }
+    }
+
+    return sheetData;
+}
+
 try {
     const jwtFromEnv = new JWT({
         email: import.meta.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
         key: import.meta.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
         scopes: SCOPES,
-    });
+    })
 
-    console.log({jwtFromEnv});
-
-    const doc = new GoogleSpreadsheet(id!, jwtFromEnv);
-    await doc.loadInfo();
-    console.log({doc});
+    doc = new GoogleSpreadsheet(id!, jwtFromEnv)
+    await doc.loadInfo()
+    spreadSheetData = await getSheets(doc);
 } catch (error) {
-    console.error('Error al autenticar con Google Sheets:', error);
+    console.error('Error al autenticar con Google Sheets:', error)
 }
 ---
 
 <Dashboard title="Dashboard">
-	<section class="flex flex-col items-center gap-8">
-        <div class="flex items-center gap-6 w-full">
-            <Typography as="span" variant="body" color="neutral" class:list={"text-center"}>
-                Selecciona una plantilla
-            </Typography>
-            { sheets.map((sheet: any) => {
-                const url = '/dashboard/' + sheet.sheetId;
-                return (
-                    <a href={url}>
-                        <article
-                            class:list={[
-                                "p-4 rounded flex items-center gap-6 cursor-pointer",
-                                id == sheet.sheetId && "border border-primary",
-                                id != sheet.sheetId && "shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
-                            ]}
-                        >
-                            <img src="/images/Google_Sheets_Logo.png" class="h-[30px]"/>
-                            <Typography as="span" variant="body-bold" color="black" class:list={""}>
-                                { sheet.name }
-                            </Typography>
-                        </article>
-                    </a>
-                )
-            })}
-        </div>
-    </section>
-</Layout>
+	<SheetSelector sheets={sheets} selectedSheetId={id}/>
+    { spreadSheetData && (
+        <Stats data={spreadSheetData}/>
+    )}
+</Dashboard>
 

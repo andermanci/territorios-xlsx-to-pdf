@@ -1,0 +1,32 @@
+---
+import Typography from "@/components/Typography.astro"
+
+const { selectedSheetId, sheets } = Astro.props
+---
+
+<section class="flex flex-col items-center gap-8">
+    <div class="flex items-center gap-6 w-full">
+        <Typography as="span" variant="body" color="neutral" class:list={"text-center"}>
+            Selecciona una plantilla
+        </Typography>
+        { sheets.map((sheet: any) => {
+            const url = '/dashboard/' + sheet.sheetId;
+            return (
+                <a href={url}>
+                    <article
+                        class:list={[
+                            "p-4 rounded flex items-center gap-6 cursor-pointer",
+                            selectedSheetId == sheet.sheetId && "border border-primary",
+                            selectedSheetId != sheet.sheetId && "shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                        ]}
+                    >
+                        <img src="/images/Google_Sheets_Logo.png" class="h-[30px]"/>
+                        <Typography as="span" variant="body-bold" color="black" class:list={""}>
+                            { sheet.name }
+                        </Typography>
+                    </article>
+                </a>
+            )
+        })}
+    </div>
+</section>

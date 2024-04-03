@@ -4,6 +4,7 @@ import Dashboard from "@/layouts/Dashboard.astro";
 import { getSession } from 'auth-astro/server';
 import { db, eq, Sheet } from 'astro:db';
 import Typography from "@/components/Typography.astro";
+import SheetSelector from "@/components/SheetSelector.astro";
 
 const session = await getSession(Astro.request)
 const user = session?.user;
@@ -13,25 +14,6 @@ const sheets: any[] = await db.select().from(Sheet).where(eq(Sheet.userId, userI
 ---
 
 <Dashboard title="Dashboard">
-	<section class="flex flex-col items-center gap-8">
-        <div class="flex items-center gap-6 w-full">
-            <Typography as="span" variant="body" color="neutral" class:list={"text-center"}>
-                Selecciona una plantilla
-            </Typography>
-            { sheets.map((sheet: any) => {
-                const url = '/dashboard/' + sheet.sheetId;
-                return (
-                    <a href={url}>
-                        <article class="p-4 rounded shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] flex items-center gap-6 cursor-pointer">
-                            <img src="/images/Google_Sheets_Logo.png" class="h-[30px]"/>
-                            <Typography as="span" variant="body-bold" color="black" class:list={""}>
-                                { sheet.name }
-                            </Typography>
-                        </article>
-                    </a>
-                )
-            })}
-        </div>
-    </section>
-</Layout>
+	<SheetSelector sheets={sheets} selectedSheetId=null/>
+</Dashboard>
 

@@ -1,0 +1,47 @@
+---
+const { data } = Astro.props
+
+const sheets: any[] = [];
+
+Object.entries(data).forEach(function(sheetData: any) {
+    const name = sheetData[0];
+    const territories: any[] = sheetData[1]
+
+    const availableTerritories: number[] = [];
+    
+    territories.forEach((territory: any) => {
+        let valid = true
+
+        let expiredDate = new Date();
+        expiredDate.setMonth(expiredDate.getMonth() - 4)
+        if (new Date(territory.lastDate) > expiredDate) {
+            valid = false
+        }
+
+        if (territory.registry.length > 0) {
+            const lastAssignment = territory.registry[territory.registry.length - 1]
+            if (lastAssignment.firstDate && !lastAssignment.secondDate) {
+                valid = false
+            }
+        }
+
+        if (valid) {
+            availableTerritories.push(territory.num)
+        }
+    })
+
+    sheets.push({name, availableTerritories})
+})
+---
+
+    { sheets.map((sheet: any) => {
+        return (
+            <article>
+                { sheet.availableTerritories.map((territory: any) => {
+                    return (
+                        <span>{territory}</span>
+                    )
+                })}
+            </article>
+        )
+    })}
