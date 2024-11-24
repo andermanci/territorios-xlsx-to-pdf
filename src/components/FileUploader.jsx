@@ -10,9 +10,9 @@ export function FileUploader() {
 
     const START_ROW = 11
 
-    const NUM_COL = 'C'
-    const LASTDATE_COL = 'D'
-    const FIRSTASSIGNED_COL = 'E'
+    const NUM_COL = 'E'
+    const LASTDATE_COL = 'F'
+    const FIRSTASSIGNED_COL = 'G'
 
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -29,6 +29,7 @@ export function FileUploader() {
                     sheetData[sheetName] = getSheetData(worksheet)
                 }
             });
+            console.log({sheetData});
             setJsonData(sheetData);
         };
 
@@ -70,6 +71,8 @@ export function FileUploader() {
     }
 
     const getAssignedData = (worksheet, currentCol, currentRow) => {
+        console.log(worksheet[`${currentCol}${currentRow + 1}`]);
+        
         const name = worksheet[`${currentCol}${currentRow}`].v;
         const firstDate = worksheet[`${currentCol}${currentRow + 1}`]?.w;
         const secondDate = worksheet[`${stepColumn(currentCol, 1)}${currentRow + 1}`]?.w;
