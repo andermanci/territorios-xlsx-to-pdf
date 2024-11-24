@@ -239,7 +239,7 @@ export function PDFGenerator({ basePdf }) {
                         {
                             Object.keys(jsonData).map((key) => (
                                 <article key={key} className="flex gap-4 items-center p-4 rounded-md shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
-                                    <img src="/images/Google_Sheets_Logo.png" className="h-[40px]"/>
+                                    <img src="src/assets/images/Google_Sheets_Logo.png" className="h-[40px]"/>
                                     <span>{key}</span>
                                 </article>
                             ))
