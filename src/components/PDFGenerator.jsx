@@ -1,12 +1,12 @@
 import { useTerritoriosStore } from "@/store/territoriosStore"
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import 'fs'
 
 import { Datepicker, Button } from 'flowbite-react';
 
 
-export function PDFGenerator({ basePdf }) {
+export function PDFGenerator({ pdfUrl }) {
 
     const X_YEAR = 163;
     const Y_YEAR = 748;
@@ -20,6 +20,15 @@ export function PDFGenerator({ basePdf }) {
     let fontObj;
     let currentPage;
 
+    const [basePdf, setBasePdf] = useState(null);
+
+    useEffect(() => {
+        fetch(pdfUrl)
+        .then((res) => res.arrayBuffer())
+        .then((data) => setBasePdf(data))
+        .catch((err) => console.error("Error loading PDF:", err));
+    }, [pdfUrl]);
+
     const {
         jsonData,
         setJsonData
@@ -30,9 +39,14 @@ export function PDFGenerator({ basePdf }) {
     const TERRITORIES_PER_PAGE = 20;
 
     const handleClick = async () => {
+        if (!basePdf) {
+            console.error("Base PDF not loaded");
+            return;
+        }
+    
+        const pdfDoc = await PDFDocument.load(basePdf);
 
         Object.entries(jsonData).forEach(async function(data) {
-            const pdfDoc = await PDFDocument.load(basePdf);
             fontObj = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
             const sheetName = data[0];
@@ -173,28 +187,6 @@ export function PDFGenerator({ basePdf }) {
                 color: rgb(0, 0, 0)
             });
         }
-    }
-
-    const addBasePdf = async (pdfDoc) => {
-        const basePdfDoc = await PDFDocument.load(basePdf);
-
-        const pageCount = pdfDoc.getPageCount();
-        for (let i = 0; i < pageCount; i++) {
-            const [page] = await basePdfDoc.copyPages(pdfDoc, [0]);
-            pdfDoc(page);
-        }
-    }
-
-    const createDocWithBasePdf = async (pdfDoc) => {
-        const basePdfDoc = await PDFDocument.load(basePdf);
-
-        const pageCount = pdfDoc.getPageCount();
-        for (let i = 0; i < pageCount; i++) {
-            const [page] = await pdfDocWithBase.copyPages(pdfDoc, [i]);
-            pdfDocWithBase.embedPage(page);
-        }
-
-        return pdfDocWithBase;
     }
 
     const downloadPdf = async (pdfDoc, sheetName) => {
