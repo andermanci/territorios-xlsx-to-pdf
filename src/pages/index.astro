@@ -5,26 +5,8 @@ import { FileUploader } from '@/components/FileUploader.jsx'
 import { PDFGenerator } from '@/components/PDFGenerator.jsx'
 import fs from 'fs'
 
-const getPdfPath = () => {
-  if (import.meta.env.MODE === 'production') {
-    // Usar la URL pública en producción
-    return import.meta.env.BASE_URL + 'S-13_S.pdf';
-  } else {
-    // Desarrollo: Leer desde el sistema de archivos
-    return './src/assets/S-13_S.pdf';
-  }
-};
-
-const pdfPath = getPdfPath();
-
-let basePdf;
-if (import.meta.env.MODE === 'production') {
-  // En producción, la carga se hace desde la URL pública
-  basePdf = pdfPath; // Pasa la URL directamente al componente
-} else {
-  // En desarrollo, usa fs para leer el archivo
-  basePdf = fs.readFileSync(pdfPath);
-}
+const pdfPath = 'public/S-13_S.pdf'
+const basePdf = fs.readFileSync(pdfPath);
 ---
 
 <Layout title="xlsx -> pdf">

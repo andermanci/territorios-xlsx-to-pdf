@@ -10,7 +10,6 @@ import * as XLSX from 'xlsx';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { useState } from 'react';
 import { Datepicker, Button } from 'flowbite-react';
-import fs from 'fs';
 
 const $$Astro$2 = createAstro();
 const $$Index$1 = createComponent(async ($$result, $$props, $$slots) => {
@@ -278,7 +277,7 @@ function PDFGenerator({ basePdf }) {
   };
   return /* @__PURE__ */ jsx(Fragment, { children: jsonData && /* @__PURE__ */ jsx("section", { className: "flex flex-col w-full", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center gap-12", children: [
     /* @__PURE__ */ jsx("div", { className: "flex gap-8 justify-center", children: Object.keys(jsonData).map((key) => /* @__PURE__ */ jsxs("article", { className: "flex gap-4 items-center p-4 rounded-md shadow-[0_3px_10px_rgb(0,0,0,0.2)]", children: [
-      /* @__PURE__ */ jsx("img", { src: "src/assets/images/Google_Sheets_Logo.png", className: "h-[40px]" }),
+      /* @__PURE__ */ jsx("img", { src: "/images/Google_Sheets_Logo.png", className: "h-[40px]" }),
       /* @__PURE__ */ jsx("span", { children: key })
     ] }, key)) }),
     /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center gap-2", children: [
@@ -306,11 +305,14 @@ const $$Index = createComponent(async ($$result, $$props, $$slots) => {
   Astro2.self = $$Index;
   const getPdfPath = () => {
     {
-      return "../S-13_S.pdf";
+      return "/S-13_S.pdf";
     }
   };
   const pdfPath = getPdfPath();
-  const basePdf = fs.readFileSync(pdfPath);
+  let basePdf;
+  {
+    basePdf = pdfPath;
+  }
   return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": "xlsx -> pdf" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<main class="flex flex-col gap-y-8 justify-center items-center h-full"> <h1 class="text-5xl text-center font-extralight">EXPORTA TU REGISTRO A PDF</h1> ${renderComponent($$result2, "FileUploader", FileUploader, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/FileUploader.jsx", "client:component-export": "FileUploader" })} ${renderComponent($$result2, "PDFGenerator", PDFGenerator, { "basePdf": basePdf, "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/PDFGenerator.jsx", "client:component-export": "PDFGenerator" })} <!-- <span>o</span>
 		<a href="/dashboard" class="bg-transparent hover:bg-gray-500 text-gray-700 font-semibold hover:text-white py-2 px-4 border border-gray-500 hover:border-transparent rounded">Abre tu archivo desde Google Sheets</a> --> </main> ` })}`;
 }, "/Users/andermancisidorpikabea/Desktop/Proyectos/territorios/territorios-xlsx-to-pdf/src/pages/index.astro", void 0);

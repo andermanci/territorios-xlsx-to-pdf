@@ -7,5 +7,6 @@ import netlify from "@astrojs/netlify";
 export default defineConfig({
   integrations: [tailwind(), react()],
   output: "server",
+  publicDir: './public',
   adapter: netlify()
 });
