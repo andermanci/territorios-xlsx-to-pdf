@@ -5,7 +5,17 @@ import { FileUploader } from '@/components/FileUploader.jsx'
 import { PDFGenerator } from '@/components/PDFGenerator.jsx'
 import fs from 'fs'
 
-const pdfPath = './src/assets/S-13_S.pdf'
+const getPdfPath = () => {
+  if (import.meta.env.MODE === 'production') {
+    // Producción: Sirve desde `public/`
+    return '/S-13_S.pdf';
+  } else {
+    // Desarrollo: Sirve desde el sistema de archivos
+    return './src/assets/S-13_S.pdf';
+  }
+};
+
+const pdfPath = getPdfPath();
 const basePdf = fs.readFileSync(pdfPath);
 ---
 
