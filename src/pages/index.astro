@@ -8,7 +8,7 @@ import fs from 'fs'
 const getPdfPath = () => {
   if (import.meta.env.MODE === 'production') {
     // Producción: Sirve desde `public/`
-    return '/S-13_S.pdf';
+    return 'S-13_S.pdf';
   } else {
     // Desarrollo: Sirve desde el sistema de archivos
     return './src/assets/S-13_S.pdf';
