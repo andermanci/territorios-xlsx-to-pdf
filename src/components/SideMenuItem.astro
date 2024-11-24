@@ -1,15 +1,15 @@
 ---
-interface Props {
-  id?: string,
-  href?: string,
-  sideBarActiveItemID?: string
-}
+// interface Props {
+//   id?: string,
+//   href?: string,
+//   sideBarActiveItemID?: string
+// }
 
-const activeClass = "bg-base-300";
-const { id, href, sideBarActiveItemID } = Astro.props
+// const activeClass = "bg-base-300";
+// const { id, href, sideBarActiveItemID } = Astro.props
 ---
 
-<li class="transition duration-300">
+<!-- <li class="transition duration-300">
   <a
     class="flex gap-4 items-center py-3 px-5 font-medium"
     href={href}
@@ -22,4 +22,4 @@ const { id, href, sideBarActiveItemID } = Astro.props
 <script define:vars={{ sideBarActiveItemID: sideBarActiveItemID, activeClass: activeClass }}>
   const activeItemElem = document.getElementById(sideBarActiveItemID);
   activeItemElem && activeItemElem.classList.add(activeClass);
-</script>
+</script> -->

@@ -1,19 +1,19 @@
 ---
-import Dashboard from "@/layouts/Dashboard.astro";
+// import Dashboard from "@/layouts/Dashboard.astro";
 
-import { getSession } from 'auth-astro/server';
-import { db, eq, Sheet } from 'astro:db';
-import Typography from "@/components/Typography.astro";
-import SheetSelector from "@/components/SheetSelector.astro";
+// import { getSession } from 'auth-astro/server';
+// import { db, eq, Sheet } from 'astro:db';
+// import Typography from "@/components/Typography.astro";
+// import SheetSelector from "@/components/SheetSelector.astro";
 
-const session = await getSession(Astro.request)
-const user = session?.user;
-const userId = user?.email;
+// const session = await getSession(Astro.request)
+// const user = session?.user;
+// const userId = user?.email;
 
-const sheets: any[] = await db.select().from(Sheet).where(eq(Sheet.userId, userId ?? ''));
+// const sheets: any[] = await db.select().from(Sheet).where(eq(Sheet.userId, userId ?? ''));
 ---
 
-<Dashboard title="Dashboard">
+<!-- <Dashboard title="Dashboard">
 	<SheetSelector sheets={sheets} selectedSheetId=null/>
-</Dashboard>
+</Dashboard> -->
 

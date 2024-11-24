@@ -1,21 +1,14 @@
----
-// import Dashboard from "@/layouts/Dashboard.astro";
+/* empty css                         */
+import { c as createAstro, d as createComponent, r as renderTemplate } from '../astro_Ck5MVThS.mjs';
+import 'kleur/colors';
+import 'html-escaper';
+import 'clsx';
 
-// import Typography from "@/components/Typography.astro";
-
-// import AddIcon from "@/icons/Add.astro"
-
-// import { getSession } from 'auth-astro/server';
-// import { db, eq, Sheet } from 'astro:db';
-
-// const session = await getSession(Astro.request)
-// const user = session?.user;
-// const userId = user?.email;
-
-// const sheets: any[] = await db.select().from(Sheet).where(eq(Sheet.userId, userId ?? ''));
----
-
-<!-- <Dashboard title="Dashboard">
+const $$Astro = createAstro();
+const $$Sheets = createComponent(async ($$result, $$props, $$slots) => {
+  const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
+  Astro2.self = $$Sheets;
+  return renderTemplate`<!-- <Dashboard title="Dashboard">
 	<section class="flex flex-col items-center gap-12">
         <Typography as="h1" variant="big" color="black" class:list={"text-center"}>
             MIS PLANTILLAS
@@ -70,4 +63,10 @@
             </form>
         </div>
     </dialog>
-</Layout> -->
+</Layout> -->`;
+}, "/Users/andermancisidorpikabea/Desktop/Proyectos/territorios/territorios-xlsx-to-pdf/src/pages/dashboard/sheets.astro", void 0);
+
+const $$file = "/Users/andermancisidorpikabea/Desktop/Proyectos/territorios/territorios-xlsx-to-pdf/src/pages/dashboard/sheets.astro";
+const $$url = "/dashboard/sheets";
+
+export { $$Sheets as default, $$file as file, $$url as url };

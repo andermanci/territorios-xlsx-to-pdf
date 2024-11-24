@@ -1,120 +1,120 @@
 ---
-import Dashboard from "@/layouts/Dashboard.astro";
+// import Dashboard from "@/layouts/Dashboard.astro";
 
-import { getSession } from 'auth-astro/server';
-import { db, eq, Sheet } from 'astro:db';
+// import { getSession } from 'auth-astro/server';
+// import { db, eq, Sheet } from 'astro:db';
 
-import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
-import { JWT } from 'google-auth-library'
-import SheetSelector from "@/components/SheetSelector.astro";
-import Stats from "@/sections/Stats.astro";
+// import { GoogleSpreadsheet, GoogleSpreadsheetWorksheet } from 'google-spreadsheet';
+// import { JWT } from 'google-auth-library'
+// import SheetSelector from "@/components/SheetSelector.astro";
+// import Stats from "@/sections/Stats.astro";
 
-const START_ROW = 11
+// const START_ROW = 11
 
-const NUM_COL = 2
-const LASTDATE_COL = 3
-const FIRSTASSIGNED_COL = 4
+// const NUM_COL = 2
+// const LASTDATE_COL = 3
+// const FIRSTASSIGNED_COL = 4
 
-const session = await getSession(Astro.request)
-const user = session?.user
-const userId = user?.email
+// const session = await getSession(Astro.request)
+// const user = session?.user
+// const userId = user?.email
 
-const sheets: any[] = await db.select().from(Sheet).where(eq(Sheet.userId, userId ?? ''))
-let doc = null
-let spreadSheetData = null
+// const sheets: any[] = await db.select().from(Sheet).where(eq(Sheet.userId, userId ?? ''))
+// let doc = null
+// let spreadSheetData = null
 
-const { id } = Astro.params
+// const { id } = Astro.params
 
-// const activeSheet = sheets.find(sheet => sheet.sheetId == id);
+// // const activeSheet = sheets.find(sheet => sheet.sheetId == id);
 
-const SCOPES = [
-  'https://www.googleapis.com/auth/spreadsheets'
-];
+// const SCOPES = [
+//   'https://www.googleapis.com/auth/spreadsheets'
+// ];
 
-const getAssignedData = (worksheet: GoogleSpreadsheetWorksheet, currentCol: number, currentRow: number) => {
-    const name = worksheet.getCell(currentRow, currentCol).value;
-    const firstDate = worksheet.getCell(currentRow + 1, currentCol).value;
-    const secondDate = worksheet.getCell(currentRow + 1, currentCol + 1).value;
-    return { name, firstDate, secondDate };
-}
+// const getAssignedData = (worksheet: GoogleSpreadsheetWorksheet, currentCol: number, currentRow: number) => {
+//     const name = worksheet.getCell(currentRow, currentCol).value;
+//     const firstDate = worksheet.getCell(currentRow + 1, currentCol).value;
+//     const secondDate = worksheet.getCell(currentRow + 1, currentCol + 1).value;
+//     return { name, firstDate, secondDate };
+// }
 
-const getRowData = (worksheet: GoogleSpreadsheetWorksheet, currentRow: number) => {
-    const num = worksheet.getCell(currentRow, NUM_COL);
-    console.log({num: num});
-    const lastDate = worksheet.getCell(currentRow, LASTDATE_COL).value;
+// const getRowData = (worksheet: GoogleSpreadsheetWorksheet, currentRow: number) => {
+//     const num = worksheet.getCell(currentRow, NUM_COL);
+//     console.log({num: num});
+//     const lastDate = worksheet.getCell(currentRow, LASTDATE_COL).value;
 
-    const registry = [];
-    let currentCol = FIRSTASSIGNED_COL;
+//     const registry = [];
+//     let currentCol = FIRSTASSIGNED_COL;
 
-    while (currentCol < worksheet.columnCount - 1) {
-        const colValid = worksheet.getCell(currentRow, currentCol);
-        if (colValid) {
-            const assignedData = getAssignedData(worksheet, currentCol, currentRow);
-            registry.push(assignedData);
-        }
-        currentCol += 2;
-    }
+//     while (currentCol < worksheet.columnCount - 1) {
+//         const colValid = worksheet.getCell(currentRow, currentCol);
+//         if (colValid) {
+//             const assignedData = getAssignedData(worksheet, currentCol, currentRow);
+//             registry.push(assignedData);
+//         }
+//         currentCol += 2;
+//     }
 
-    return { num, lastDate, registry };
-}
+//     return { num, lastDate, registry };
+// }
 
-const getSheetData = (worksheet: GoogleSpreadsheetWorksheet) => {
-    let currentRow = START_ROW;
+// const getSheetData = (worksheet: GoogleSpreadsheetWorksheet) => {
+//     let currentRow = START_ROW;
 
-    const response = [];
+//     const response = [];
 
-    while (currentRow < worksheet.rowCount - 1) {
-        const rowValid = worksheet.getCell(currentRow, NUM_COL);
-        if (rowValid) {
-            const rowData = getRowData(worksheet, currentRow);
-            response.push(rowData);
-        }
-        currentRow += 2;
-    }
+//     while (currentRow < worksheet.rowCount - 1) {
+//         const rowValid = worksheet.getCell(currentRow, NUM_COL);
+//         if (rowValid) {
+//             const rowData = getRowData(worksheet, currentRow);
+//             response.push(rowData);
+//         }
+//         currentRow += 2;
+//     }
 
-    return response;
-}
+//     return response;
+// }
 
-const getSheets = async (doc: GoogleSpreadsheet) => {
-    const totalSheets = doc.sheetCount;
-    const sheetData: any = {};
+// const getSheets = async (doc: GoogleSpreadsheet) => {
+//     const totalSheets = doc.sheetCount;
+//     const sheetData: any = {};
 
-    for (let i=0; i < totalSheets; i++) {
-        const sheet = doc.sheetsByIndex[i];
+//     for (let i=0; i < totalSheets; i++) {
+//         const sheet = doc.sheetsByIndex[i];
 
-        if (sheet.title != 'Calculos') {
-            await sheet.loadCells({
-                startRowIndex: 0,
-                startColumnIndex: 0,
-                endRowIndex: sheet.rowCount,
-                endColumnIndex: sheet.columnCount
-            });
-            sheetData[sheet.title] = getSheetData(sheet);
-        }
-    }
+//         if (sheet.title != 'Calculos') {
+//             await sheet.loadCells({
+//                 startRowIndex: 0,
+//                 startColumnIndex: 0,
+//                 endRowIndex: sheet.rowCount,
+//                 endColumnIndex: sheet.columnCount
+//             });
+//             sheetData[sheet.title] = getSheetData(sheet);
+//         }
+//     }
 
-    return sheetData;
-}
+//     return sheetData;
+// }
 
-try {
-    const jwtFromEnv = new JWT({
-        email: import.meta.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        key: import.meta.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-        scopes: SCOPES,
-    })
+// try {
+//     const jwtFromEnv = new JWT({
+//         email: import.meta.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+//         key: import.meta.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+//         scopes: SCOPES,
+//     })
 
-    doc = new GoogleSpreadsheet(id!, jwtFromEnv)
-    await doc.loadInfo()
-    spreadSheetData = await getSheets(doc);
-} catch (error) {
-    console.error('Error al autenticar con Google Sheets:', error)
-}
+//     doc = new GoogleSpreadsheet(id!, jwtFromEnv)
+//     await doc.loadInfo()
+//     spreadSheetData = await getSheets(doc);
+// } catch (error) {
+//     console.error('Error al autenticar con Google Sheets:', error)
+// }
 ---
 
-<Dashboard title="Dashboard">
+<!-- <Dashboard title="Dashboard">
 	<SheetSelector sheets={sheets} selectedSheetId={id}/>
     { spreadSheetData && (
         <Stats data={spreadSheetData}/>
     )}
-</Dashboard>
+</Dashboard> -->
 
