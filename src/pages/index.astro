@@ -16,7 +16,15 @@ const getPdfPath = () => {
 };
 
 const pdfPath = getPdfPath();
-const basePdf = fs.readFileSync(pdfPath);
+
+let basePdf;
+if (import.meta.env.MODE === 'production') {
+  // En producción, la carga se hace desde la URL pública
+  basePdf = pdfPath; // Pasa la URL directamente al componente
+} else {
+  // En desarrollo, usa fs para leer el archivo
+  basePdf = fs.readFileSync(pdfPath);
+}
 ---
 
 <Layout title="xlsx -> pdf">
