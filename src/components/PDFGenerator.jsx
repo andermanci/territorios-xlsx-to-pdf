@@ -19,6 +19,9 @@ export function PDFGenerator({ pdfUrl }) {
 
     let fontObj;
     let currentPage;
+    let currentPageNumber = -1;
+
+    let extraPageOffset = 0;
 
     const [basePdf, setBasePdf] = useState(null);
 
@@ -53,18 +56,26 @@ export function PDFGenerator({ pdfUrl }) {
             const territories = data[1];
 
             if (sheetName == 'Calculos') return;
+            if (sheetName == 'Formulario') return;
 
             await addPages(territories, pdfDoc);
 
             territories.forEach(async function(territory, index) {
-                if (index % TERRITORIES_PER_PAGE == 0) {
-                    currentPage = pdfDoc.getPage(Math.floor(index / TERRITORIES_PER_PAGE));
+                const isNewArea = territory.lastDate == undefined;
+
+                if (isNewArea) {
+                    extraPageOffset = index % TERRITORIES_PER_PAGE;
+                }
+
+                if ((index - extraPageOffset) % TERRITORIES_PER_PAGE == 0 || isNewArea) {
+                    currentPageNumber ++;
+                    currentPage = pdfDoc.getPage(currentPageNumber);
                     currentX = X_START;
                     currentY = Y_START;
                     paintYear();
                 }
 
-                paintTerritory(territory);
+                paintTerritory(territory, index);
 
                 currentX = X_START;
                 currentY -= 31.3;
@@ -75,7 +86,9 @@ export function PDFGenerator({ pdfUrl }) {
     }
 
     const addPages = async (territories, pdfDoc) => {
-        const pagesTotal = Math.ceil(territories.length / TERRITORIES_PER_PAGE);
+        const areas = territories.filter(territory => territory.lastDate == undefined).length;
+
+        const pagesTotal = Math.ceil(territories.length / TERRITORIES_PER_PAGE) + areas - 1;
         const basePdfDoc = await PDFDocument.load(basePdf);
 
         for (let i = 0; i < pagesTotal - 1; i++) {
@@ -91,28 +104,38 @@ export function PDFGenerator({ pdfUrl }) {
         if (month < 8) {
             year --;
         }
-        
-        const fontSize = 12;
 
-        currentPage.drawText(year.toString(), {
-            x: X_YEAR - calcX(year.toString(), fontSize),
+        const nextYear = year + 1;
+        
+        const fontSize = 11;
+
+        currentPage.drawText(year.toString() + '/' + nextYear.toString(), {
+            x: X_YEAR - calcX(year.toString() + '/' + nextYear.toString(), fontSize),
             y: Y_YEAR,
             size: fontSize,
             color: rgb(0, 0, 0)
         });
     }
 
-    const paintTerritory = (territory) => {
-        paintTerritoryNum(territory);
+    const paintTerritory = (territory, index) => {
+        if (territory.lastDate == undefined) {
+            
+            paintNewArea(territory);
 
-        currentX += 49;
-        if (territory.lastDate) {
-            paintTerritoryLastDate(territory);
-        }
+        } else {
 
-        currentX += 85;
-        if (territory.registry && territory.registry.length > 0) {
-            paintTerritoryRegistry(territory.registry);
+            paintTerritoryNum(territory);
+
+            currentX += 49;
+            if (territory.lastDate) {
+                paintTerritoryLastDate(territory);
+            }
+    
+            currentX += 85;
+            if (territory.registry && territory.registry.length > 0) {
+                paintTerritoryRegistry(territory.registry);
+            }
+
         }
     }
 
@@ -126,6 +149,29 @@ export function PDFGenerator({ pdfUrl }) {
             color: rgb(0, 0, 0)
         });
     }
+
+    const paintNewArea = (territory) => {
+        const fontSize = 14;
+        const text = territory.num.toString();
+
+        const rectWidth = 523.1;
+        const rectHeight = 29.75;
+
+        currentPage.drawRectangle({
+            x: 37.54,
+            y: currentY - 11.25,
+            width: rectWidth,
+            height: rectHeight,
+            color: rgb(0.8, 0.8, 0.8),
+        });
+
+        currentPage.drawText(text, {
+            x: currentX - 10,
+            y: currentY - 1.25,
+            size: fontSize,
+            color: rgb(0, 0, 0),
+        });
+    };
 
     const paintTerritoryLastDate = (territory) => {
         const fontSize = 10;

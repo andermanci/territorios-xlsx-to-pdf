@@ -24,12 +24,11 @@ export function FileUploader() {
 
             const sheetData = {};
             workbook.SheetNames.forEach(sheetName => {
-                if (sheetName != 'Calculos') {
+                if (sheetName != 'Calculos' && sheetName != 'Formulario') {
                     const worksheet = workbook.Sheets[sheetName];
                     sheetData[sheetName] = getSheetData(worksheet)
                 }
             });
-            console.log({sheetData});
             setJsonData(sheetData);
         };
 
@@ -71,8 +70,7 @@ export function FileUploader() {
     }
 
     const getAssignedData = (worksheet, currentCol, currentRow) => {
-        console.log(worksheet[`${currentCol}${currentRow + 1}`]);
-        
+    
         const name = worksheet[`${currentCol}${currentRow}`].v;
         const firstDate = worksheet[`${currentCol}${currentRow + 1}`]?.w;
         const secondDate = worksheet[`${stepColumn(currentCol, 1)}${currentRow + 1}`]?.w;
