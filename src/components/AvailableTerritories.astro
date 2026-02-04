@@ -14,7 +14,8 @@ Object.entries(data).forEach(function(sheetData: any) {
 
         let expiredDate = new Date();
         expiredDate.setMonth(expiredDate.getMonth() - 4)
-        if (new Date(territory.lastDate) > expiredDate) {
+        const [dd, mm, yyyy] = territory.lastDate.split('/');
+        if (new Date(parseInt(yyyy), parseInt(mm) - 1, parseInt(dd)) > expiredDate) {
             valid = false
         }
 

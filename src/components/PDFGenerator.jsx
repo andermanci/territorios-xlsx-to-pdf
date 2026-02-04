@@ -8,6 +8,9 @@ import { Datepicker, Button } from 'flowbite-react';
 
 export function PDFGenerator({ pdfUrl }) {
 
+    const COLOR_DANGER = rgb(0xff / 255, 0x00 / 255, 0x01 / 255);
+    const COLOR_PERSONAL = rgb(0xfb / 255, 0xbc / 255, 0x03 / 255);
+
     const X_YEAR = 163;
     const Y_YEAR = 748;
 
@@ -73,6 +76,7 @@ export function PDFGenerator({ pdfUrl }) {
                     currentX = X_START;
                     currentY = Y_START;
                     paintYear();
+                    paintLegend();
                 }
 
                 paintTerritory(territory, index);
@@ -117,6 +121,39 @@ export function PDFGenerator({ pdfUrl }) {
         });
     }
 
+    const paintLegend = () => {
+        const fontSize = 7;
+        const squareSize = 8;
+        const rightMargin = 560;
+        const yPos = Y_YEAR + 2;
+
+        const items = [
+            { label: 'Territorio peligroso', color: COLOR_DANGER },
+            { label: 'Territorio personal', color: COLOR_PERSONAL },
+        ];
+
+        let xOffset = rightMargin;
+        items.forEach(item => {
+            const textWidth = fontObj.widthOfTextAtSize(item.label, fontSize);
+            xOffset -= textWidth;
+            currentPage.drawText(item.label, {
+                x: xOffset,
+                y: yPos,
+                size: fontSize,
+                color: rgb(0, 0, 0),
+            });
+            xOffset -= squareSize + 3;
+            currentPage.drawRectangle({
+                x: xOffset,
+                y: yPos - 1,
+                width: squareSize,
+                height: squareSize,
+                color: item.color,
+            });
+            xOffset -= 12;
+        });
+    }
+
     const paintTerritory = (territory, index) => {
         if (territory.lastDate == undefined) {
             
@@ -141,9 +178,24 @@ export function PDFGenerator({ pdfUrl }) {
 
     const paintTerritoryNum = (territory) => {
         const fontSize = 10;
+        const text = territory.num.toString();
 
-        currentPage.drawText(territory.num.toString(), {
-            x: currentX - calcX(territory.num.toString(), fontSize),
+        if (territory.special === 1 || territory.special === 2) {
+            const fillColor = territory.special === 1
+                ? COLOR_DANGER
+                : COLOR_PERSONAL;
+
+            currentPage.drawRectangle({
+                x: 37.54,
+                y: currentY - 11.25,
+                width: 33.25,
+                height: 29.75,
+                color: fillColor,
+            });
+        }
+
+        currentPage.drawText(text, {
+            x: currentX - calcX(text, fontSize),
             y: currentY,
             size: fontSize,
             color: rgb(0, 0, 0)
@@ -196,8 +248,8 @@ export function PDFGenerator({ pdfUrl }) {
     }
 
     const isAssignmentInDateRange = (assignment) => {
-        const firstDate = new Date(getFormattedDate(assignment.firstDate));
-        const secondDate = new Date(getFormattedDate(assignment.secondDate));
+        const firstDate = parseEuropeanDate(assignment.firstDate);
+        const secondDate = parseEuropeanDate(assignment.secondDate);
 
         return selectedDate < firstDate || selectedDate < secondDate;
     }
@@ -255,17 +307,10 @@ export function PDFGenerator({ pdfUrl }) {
         return fontObj.widthOfTextAtSize(text, size) / 2;
     }
 
-    const getFormattedDate = (date) => {
-        if (!date) {
-            return '';
-        }
-
-        const split = date.split('/');
-        const day = split[0];
-        const month = split[1];
-        const year = split[2];
-
-        return `${month}-${day}-${year}`;
+    const parseEuropeanDate = (date) => {
+        if (!date) return null;
+        const [day, month, year] = date.split('/');
+        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
     }
 
     return (

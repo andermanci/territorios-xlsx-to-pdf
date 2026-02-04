@@ -10,6 +10,7 @@ export function FileUploader() {
 
     const START_ROW = 11
 
+    const SPECIAL_COL = 'A'
     const NUM_COL = 'E'
     const LASTDATE_COL = 'F'
     const FIRSTASSIGNED_COL = 'G'
@@ -20,7 +21,7 @@ export function FileUploader() {
 
         reader.onload = (e) => {
             const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
+            const workbook = XLSX.read(data, { type: 'array', cellDates: true });
 
             const sheetData = {};
             workbook.SheetNames.forEach(sheetName => {
@@ -51,9 +52,22 @@ export function FileUploader() {
         return response;
     }
 
+    const formatDateCell = (cell) => {
+        if (!cell) return undefined;
+        const value = cell.v;
+        if (value instanceof Date) {
+            const day = String(value.getDate()).padStart(2, '0');
+            const month = String(value.getMonth() + 1).padStart(2, '0');
+            const year = value.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        return cell.w;
+    }
+
     const getRowData = (worksheet, currentRow) => {
+        const special = worksheet[`${SPECIAL_COL}${currentRow}`]?.v;
         const num = worksheet[`${NUM_COL}${currentRow}`]?.v;
-        const lastDate = worksheet[`${LASTDATE_COL}${currentRow}`]?.w;
+        const lastDate = formatDateCell(worksheet[`${LASTDATE_COL}${currentRow}`]);
 
         const registry = [];
         let currentCol = FIRSTASSIGNED_COL;
@@ -66,14 +80,14 @@ export function FileUploader() {
             assignedValid = worksheet[currentCol + currentRow]?.v;
         }
 
-        return { num, lastDate, registry };
+        return { special, num, lastDate, registry };
     }
 
     const getAssignedData = (worksheet, currentCol, currentRow) => {
     
         const name = worksheet[`${currentCol}${currentRow}`].v;
-        const firstDate = worksheet[`${currentCol}${currentRow + 1}`]?.w;
-        const secondDate = worksheet[`${stepColumn(currentCol, 1)}${currentRow + 1}`]?.w;
+        const firstDate = formatDateCell(worksheet[`${currentCol}${currentRow + 1}`]);
+        const secondDate = formatDateCell(worksheet[`${stepColumn(currentCol, 1)}${currentRow + 1}`]);
         return { name, firstDate, secondDate };
     }
 
